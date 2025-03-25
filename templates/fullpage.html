@@ -1,0 +1,327 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width:device-width, initial-scale=1.0">
+    <title>صفحه تمام صفحه با fullPage.js و منو</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.15/fullpage.min.css">
+    <style>
+        /* ... استایل‌ها ... */
+    </style>
+</head>
+<body>
+    <div id="menu">
+        <header class="header">
+            <div id="menu-btn" class="fas fa-bars"></div>
+            <a href="{% url 'Cart:cart_view' %}" class="logo"> سبد خرید<i class="fas fa-mug-hot"></i> </a>
+            <nav class="navbar">
+                <a href="{% url 'fullpage_section' section='section1' %}">خانه</a>
+                <a href="{% url 'fullpage_section' section='section2' %}">درباره ما</a>
+                <a href="{% url 'fullpage_section' section='section3' %}">منو</a>
+                <a href="{% url 'fullpage_section' section='section5' %}">نظرات</a>
+                <a href="{% url 'fullpage_section' section='section4' %}">تماس با ما</a>
+                {% if user.is_authenticated %}
+                    <a href="/accounts/email/">حساب کاربری</a>
+                    <a href="/accounts/logout/" style="color: rgb(255, 0, 0);">خروج</a>
+                {% else %}
+                    <a href="/accounts/login/" style="color: rgb(51, 255, 0);">ورود</a>
+                    <a href="/accounts/signup/" style="color: rgb(204, 255, 0);">ثبت‌نام</a>
+                {% endif %}
+            </nav>
+            <a href="{% url 'product_list' %}" class="btn">رزرو میز</a>
+        </header>
+    </div>
+
+    <div id="fullpage">
+        <div class="section" data-anchor="section1">
+            {% include 'home.html' %}
+        </div>
+        <div class="section" data-anchor="section2">
+            {% include 'about.html' %}
+        </div>
+        <div class="section" data-anchor="section3">
+            <section class="menu" id="menu">
+                <h1 class="heading"> منوی ما <span>منوی محبوب</span> </h1>
+                {% for product in products %}
+                    <div class="box-container">
+                        <a href="{% url 'Cart:add_to_cart' product.id %}" class="box">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                            <div class="content">
+                                <h3>{{ product.name }}</h3>
+                                <p>{{ product.description }}</p>
+                                <span>{{ product.price }}</span>
+                            </div>
+                        </a>
+                
+                    </div>
+                {% empty %}
+                    <p>هیچ محصولی موجود نیست</p>
+    
+                {% endfor %}
+            </section>
+        </div>
+        <div class="section" data-anchor="section4">
+            <section class="book" id="book">
+
+                <h1 class="heading"> رزرو <span>یک میز رزرو کن</span> </h1>
+        
+                <form action="" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+        
+                    <input type="submit" value="ارسال پیام" class="btn">
+                    
+                </form>
+                
+                <style>
+                    .messages-container {
+                        position: fixed; /* نمایش در بالای صفحه */
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        background-color: #d4edda; /* سبز روشن */
+                        color: #155724; /* سبز تیره */
+                        padding: 10px;
+                        text-align: center;
+                        z-index: 1000; /* اطمینان از نمایش روی سایر عناصر */
+                        display: none; /* مخفی کردن اولیه */
+                        position: relative; /* برای موقعیت دهی دکمه ضربدر */
+                    }
+                
+                    .messages-container ul {
+                        list-style: none;
+                        padding: 0;
+                        margin: 0;
+                    }
+                
+                    .messages-container li {
+                        margin: 5px 0;
+                    }
+                
+                    .close-button {
+                        position: absolute;
+                        top: 5px;
+                        left: 5px; /* یا right: 5px; برای قرار دادن در سمت راست */
+                        background: none;
+                        border: none;
+                        font-size: 20px;
+                        cursor: pointer;
+                        color: #155724;
+                    }
+                </style>
+                
+                {% if messages %}
+                    <div class="messages-container" id="messagesContainer">
+                        <button class="close-button" onclick="closeMessages()">×</button>
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                
+                    <script>
+                        const messagesContainer = document.getElementById('messagesContainer');
+                
+                        function closeMessages() {
+                            messagesContainer.style.display = 'none';
+                        }
+                
+                        if (messagesContainer) {
+                            messagesContainer.style.display = 'block'; // نمایش پیام‌ها
+                
+                            // مخفی کردن پیام‌ها بعد از 1 دقیقه (60000 میلی‌ثانیه)
+                            setTimeout(closeMessages, 60000);
+                        }
+                    </script>
+                {% endif %}
+        
+            </section>
+        </div>
+        <div class="section" data-anchor="section5">
+            <div class="comments-section">
+                <h2 class="section-title">نظرات مشتریان</h2>
+                
+                <div class="comments-container">
+                    <div class="comments-wrapper">
+                        {% for comment in comments %}
+                        <div class="comment-card">
+                            <div class="user-info">
+                                <div>
+                                    <div class="user-name">{{comment.name}}</div>
+                                    <div class="comment-date">{{ comment.time|date:"Y/m/d" }}</div>
+                                </div>
+                            </div>
+                            <p class="comment-text">{{ comment.description}}</p>
+
+                        </div>
+                        {% empty %}
+                        <div class="no-comments">
+                            <p>هنوز نظری ثبت نشده است</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <style>
+            .comments-section {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                padding: 40px 20px;
+                background-color: #f9f5f0;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+                color: #4a2c12;
+                margin-bottom: 30px;
+                text-align: center;
+                position: relative;
+            }
+            
+            .section-title:after {
+                content: '';
+                display: block;
+                width: 100px;
+                height: 3px;
+                background: #c27b3a;
+                margin: 15px auto;
+            }
+            
+            .comments-container {
+                height: calc(100% - 100px);
+            }
+            
+            .comments-wrapper {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+                gap: 30px;
+                padding: 20px;
+                height: 100%;
+            }
+            
+            .comment-card {
+                min-width: 320px;
+                max-width: 320px;
+                background: #fff;
+                border-radius: 15px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+                padding: 25px;
+                scroll-snap-align: start;
+                transition: all 0.3s ease;
+                border: 1px solid #e8d9c5;
+                height: fit-content;
+            }
+            
+            .comment-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            }
+            
+            .user-info {
+                display: flex;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+            
+            .user-avatar {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                object-fit: cover;
+                margin-left: 15px;
+                border: 2px solid #c27b3a;
+            }
+            
+            .user-name {
+                font-weight: 600;
+                color: #4a2c12;
+                font-size: 1.1rem;
+            }
+            
+            .comment-date {
+                font-size: 0.8rem;
+                color: #8c7b6b;
+                margin-top: 3px;
+            }
+            
+            .comment-text {
+                color: #5a4a3a;
+                line-height: 1.7;
+                font-size: 0.95rem;
+                margin-bottom: 15px;
+            }
+            
+            .comment-rating {
+                color: #ffc107;
+                font-size: 1.2rem;
+            }
+            
+            .no-comments {
+                width: 100%;
+                text-align: center;
+                color: #8c7b6b;
+                font-size: 1.1rem;
+                padding: 40px 0;
+            }
+            
+            @media (max-width: 768px) {
+                .comment-card {
+                    min-width: 280px;
+                }
+                
+                .comments-wrapper {
+                    padding: 10px;
+                    gap: 15px;
+                }
+            }
+        </style>
+        
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // تنظیمات اسکرول برای fullPage.js
+                fullpage_api.setAllowScrolling(false, 'down, up');
+                fullpage_api.setKeyboardScrolling(false, 'down, up');
+                
+                // مدیریت اسکرول افقی
+                const commentsWrapper = document.querySelector('.comments-wrapper');
+                if(commentsWrapper) {
+                    commentsWrapper.addEventListener('wheel', function(e) {
+                        if(Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                            this.scrollLeft += e.deltaY;
+                            e.preventDefault();
+                        }
+                    });
+                }
+            });
+        </script>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullPage.js/4.0.15/fullpage.min.js"></script>
+    <script>
+        new fullpage('#fullpage', {
+            autoScrolling: true,
+            scrollHorizontally: true,
+            navigation: true,
+            navigationPosition: 'right',
+            anchors: ['section1', 'section2', 'section3', 'section4','section5'],
+            menu: '#menu',
+        });
+    
+        // هدایت به سکشن با استفاده از پارامتر URL
+        {% if section %}
+            // دریافت مقدار section از Django
+            var section = '{{ section }}';
+    
+            // هدایت به سکشن با استفاده از fullPage.js
+            fullpage_api.moveTo(section);
+        {% endif %}
+    </script>
+</body>
+</html>

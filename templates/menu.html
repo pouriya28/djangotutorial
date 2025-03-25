@@ -1,0 +1,18 @@
+{% load static %}
+{% block content %}
+<section class="menu" id="menu">
+    <h1 class="heading"> منوی ما <span>منوی محبوب</span> </h1>
+    {% for product in object_list %}  {# تغییر نام متغیر به object_list #}
+        <div class="box-container">
+            <a href="{% url 'Cart:add_to_cart' product.id %}" class="box">
+                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                <div class="content">
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description }}</p>
+                    <span>{{ product.price }}</span>
+                </div>
+            </a>
+        </div>
+    {% endfor %}
+</section>
+{% endblock %}

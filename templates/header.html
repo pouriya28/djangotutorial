@@ -1,0 +1,21 @@
+<div id="menu">
+    <header class="header">
+        <div id="menu-btn" class="fas fa-bars"></div>
+        <a href="{% url 'Cart:cart_view' %}" class="logo"> سبد خرید<i class="fas fa-mug-hot"></i> </a>
+        <nav class="navbar">
+            <a href="{% url 'fullpage_section' section='section1' %}">خانه</a>
+            <a href="{% url 'fullpage_section' section='section2' %}">درباره ما</a>
+            <a href="{% url 'fullpage_section' section='section3' %}">منو</a>
+            <a href="{% url 'fullpage_section' section='section5' %}">نظرات</a>
+            <a href="{% url 'fullpage_section' section='section4' %}">تماس با ما</a>
+            {% if user.is_authenticated %}
+                <a href="/accounts/email/">حساب کاربری</a>
+                <a href="/accounts/logout/" style="color: rgb(255, 0, 0);">خروج</a>
+            {% else %}
+                <a href="/accounts/login/" style="color: rgb(51, 255, 0);">ورود</a>
+                <a href="/accounts/signup/" style="color: rgb(204, 255, 0);">ثبت‌نام</a>
+            {% endif %}
+        </nav>
+        <a href="{% url 'product_list' %}" class="btn">رزرو میز</a>
+    </header>
+</div>

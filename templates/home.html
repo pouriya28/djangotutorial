@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="home" id="home">
+
+    <div class="row">
+
+        <div class="content">
+            <h3>قهوه تازه سر صبح</h3>
+            <a href="#section3" class="btn">الان یکی بخر</a>
+        </div>
+
+        <div class="image">
+            <img src="{% static 'image/home-img-1.png' %}" class="main-home-image" alt="بیرون بر">
+        </div>
+
+    </div>
+
+    <div class="image-slider">
+        <img src="{% static 'image/home-img-1.png' %}" alt="بیرون بر">
+        <img src="{% static 'image/home-img-2.png' %}" alt="فنجون">
+        <img src="{% static 'image/home-img-3.png' %}" alt="ماگ">
+    </div>
+
+</section>
+{% endblock %} 

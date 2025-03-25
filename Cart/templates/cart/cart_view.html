@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+    <div class="cart-container" style="width: 80%; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <h1 style="text-align: center; margin-bottom: 20px;">سبد خرید</h1>
+
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form action="{% url 'Cart:update_cart' %}" method="post">
+            {% csrf_token %}
+            <table class="cart-table" style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">محصول</th>
+                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">تعداد</th>
+                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">قیمت واحد</th>
+                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">مجموع</th>
+                        <th style="border: 1px solid #ddd; padding: 8px; text-align: left; background-color: #f2f2f2;">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">{{ item.product.name }}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" class="quantity-input" min="0" style="width: 60px;">
+                            </td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">{{ item.product.price }}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">{{ item.total_price }}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                <form action="{% url 'Cart:decrease_quantity' item.id %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-secondary">-</button>
+                                </form>
+                                <form action="{% url 'Cart:remove_item' item.id %}" method="post" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger">حذف</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="border: 1px solid #ddd; padding: 8px; text-align: left;">مجموع کل</td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">{{ total_price }}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                            <button type="submit" class="btn btn-success">به‌روزرسانی سبد خرید</button>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
+    </div>
+{% endblock %}

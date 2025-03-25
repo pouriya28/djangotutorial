@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+    {% block content %}
+        <section class="book" id="book">
+
+            <h1 class="heading"> رزرو <span>یک میز رزرو کن</span> </h1>
+    
+            <form action="" method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+    
+                <input type="submit" value="ارسال پیام" class="btn">
+                
+            </form>
+            
+            <style>
+                .messages-container {
+                    position: fixed; /* نمایش در بالای صفحه */
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    background-color: #d4edda; /* سبز روشن */
+                    color: #155724; /* سبز تیره */
+                    padding: 10px;
+                    text-align: center;
+                    z-index: 1000; /* اطمینان از نمایش روی سایر عناصر */
+                    display: none; /* مخفی کردن اولیه */
+                    position: relative; /* برای موقعیت دهی دکمه ضربدر */
+                }
+            
+                .messages-container ul {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
+            
+                .messages-container li {
+                    margin: 5px 0;
+                }
+            
+                .close-button {
+                    position: absolute;
+                    top: 5px;
+                    left: 5px; /* یا right: 5px; برای قرار دادن در سمت راست */
+                    background: none;
+                    border: none;
+                    font-size: 20px;
+                    cursor: pointer;
+                    color: #155724;
+                }
+            </style>
+            
+            {% if messages %}
+                <div class="messages-container" id="messagesContainer">
+                    <button class="close-button" onclick="closeMessages()">×</button>
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            
+                <script>
+                    const messagesContainer = document.getElementById('messagesContainer');
+            
+                    function closeMessages() {
+                        messagesContainer.style.display = 'none';
+                    }
+            
+                    if (messagesContainer) {
+                        messagesContainer.style.display = 'block'; // نمایش پیام‌ها
+            
+                        // مخفی کردن پیام‌ها بعد از 1 دقیقه (60000 میلی‌ثانیه)
+                        setTimeout(closeMessages, 60000);
+                    }
+                </script>
+            {% endif %}
+    
+        </section>
+    {% endblock %}

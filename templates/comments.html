@@ -1,0 +1,120 @@
+{% load static %}
+<style>
+    .comments-container {
+        width: 80%;
+        margin: 50px auto;
+        direction: rtl; /* راست به چپ کردن متن */
+        position: relative; /* برای موقعیت دهی دکمه‌ها */
+        display: flex; /* استفاده از flexbox برای وسط‌چین کردن */
+        justify-content: center; /* وسط‌چین کردن افقی */
+        align-items: center; /* وسط‌چین کردن عمودی */
+    }
+
+    .comment-card {
+        width: 300px; /* تنظیم عرض کارت */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #f8f5f0; /* کرمی رنگ */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        display: none; /* مخفی کردن همه کارت‌ها */
+    }
+
+    .comment-card.active {
+        display: block; /* نمایش کارت فعال */
+    }
+
+    .comment-card h1 {
+        margin: 0;
+        font-size: 1.2em;
+        color: #333;
+    }
+
+    .comment-card h2 {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .nav-button {
+        background-color: #ffc107; /* رنگ زرد */
+        color: #333;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin: 0 10px; /* فاصله بین دکمه‌ها و کارت */
+    }
+
+    .nav-button:hover {
+        background-color: #ffca2c; /* رنگ زرد روشن‌تر */
+    }
+
+    .navbar {
+        background-color: #333;
+        overflow: hidden;
+        text-align: center;
+        padding: 10px 0;
+    }
+
+    .navbar a {
+        color: white;
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .navbar a:hover {
+        background-color: #ddd;
+        color: black;
+    }
+</style>
+
+<nav class="navbar">
+    <a href="{% url 'HomePage' %}">خانه</a>
+    <a href="{% url 'about' %}">درباره ما</a>
+    <a href="{% url 'product_list' %}">منو</a>
+    <a href="{% url 'comments' %}">نظرات</a>
+    <a href="{% url 'contact' %}">تماس با ما</a>
+    {% if user.is_authenticated %}
+        <a href="/accounts/email/">حساب کاربری</a>
+        <a href="/accounts/logout/">خروج</a>
+    {% else %}
+        <a href="/accounts/login/">ورود</a>
+        <a href="/accounts/signup/">ثبت‌نام</a>
+    {% endif %}
+</nav>
+
+<div class="comments-container">
+    <button class="nav-button left" onclick="prevComment()">&#8249;</button>
+    {% for comment in comments %}
+        <div class="comment-card">
+            <h1>{{ comment.description }}</h1>
+            <h2>{{ comment.name }}</h2>
+        </div>
+    {% endfor %}
+    <button class="nav-button right" onclick="nextComment()">&#8250;</button>
+</div>
+
+<script>
+    let currentComment = 0;
+    const commentCards = document.querySelectorAll('.comment-card');
+
+    function showComment(index) {
+        commentCards.forEach(card => card.classList.remove('active'));
+        commentCards[index].classList.add('active');
+    }
+
+    function nextComment() {
+        currentComment = (currentComment + 1) % commentCards.length;
+        showComment(currentComment);
+    }
+
+    function prevComment() {
+        currentComment = (currentComment - 1 + commentCards.length) % commentCards.length;
+        showComment(currentComment);
+    }
+
+    showComment(currentComment); // نمایش اولین کامنت
+</script>
